@@ -19,6 +19,8 @@
     "ts-node": "^8.10.2"
   },
   "scripts": {
+    "build": "tsc --outDir dist",
+    "start": "node dist/index.js",
     "start-dev": "ts-node src/index.ts"
   }
 }
