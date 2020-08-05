@@ -5,7 +5,10 @@ config();
 const { USERNAME, PASSWORD, URL } = process.env;
 
 async function run() {
-  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox'],
+    headless: false,
+  });
   const page = await browser.newPage();
   await page.goto(URL as string);
 
