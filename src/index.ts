@@ -7,7 +7,6 @@ const { USERNAME, PASSWORD, URL } = process.env;
 async function run() {
   const browser = await puppeteer.launch({
     args: ['--no-sandbox'],
-    headless: false,
   });
   const page = await browser.newPage();
   await page.goto(URL as string);
@@ -42,27 +41,44 @@ async function run() {
     })} ${('0' + tomorrow.getDate()).slice(-2)}, ${tomorrow.getFullYear()}"]`,
     (form) => (form as HTMLInputElement).click()
   );
-  await page.waitFor(5000);
+
+  await page.waitForSelector(
+    'ctl00_MasterRadAjaxLoadingPanelctl00_ContentPlaceHolder1_DateSelectionPanel',
+    { hidden: true }
+  );
+  await page.waitFor(1000);
 
   // Pick time
   await page.$eval(
     '#ctl00_ContentPlaceHolder1_StartTimePicker_timeView_wrapper',
     (form) => ((form as HTMLDivElement).style.display = 'block')
   );
+
   await page.$$eval(
     '#ctl00_ContentPlaceHolder1_StartTimePicker_timeView_tdl a',
     (anchors) =>
       (anchors.find(
-        (anchor) => anchor.textContent === '07:00'
+        (anchor) => anchor.textContent === '7:00 AM'
       ) as HTMLAnchorElement).click()
   );
-  await page.waitFor(5000);
+
+  await page.waitForSelector(
+    'ctl00_MasterRadAjaxLoadingPanelctl00_ContentPlaceHolder1_DateSelectionPanel',
+    { hidden: true }
+  );
+  await page.waitFor(1000);
 
   // Submit
   await page.$eval('#ctl00_ContentPlaceHolder1_FooterSaveButton', (form) =>
     (form as HTMLAnchorElement).click()
   );
   await page.waitFor(5000);
+
+  await page.setViewport({ width: 1024, height: 1200 });
+  await page.screenshot({
+    path: './confirmation.jpg',
+    type: 'jpeg',
+  });
 }
 
 run()
